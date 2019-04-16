@@ -28,11 +28,7 @@ class XCCrawler:
     def get_result(self):
         for place in placeArray:
             #主数据
-            mc=[]
-            #评分数据
-            star=[]
-            #评论时间
-            date=[]
+            mainData = []
             self.districtId = place['districtId']
             self.poiID = place['poiID']
             self.resourceId = place['resourceId']
@@ -46,18 +42,25 @@ class XCCrawler:
                     soup=BeautifulSoup(html.content)
                     block=soup.find_all(class_="comment_single")
                     for j in block:
+                        result = {}
                         text=j.find(class_="heightbox")
+                        id = j.find(id="usefultodo")['data-id']
+                        name = j.find(class_="ellipsis").text
+                        date = j.find(class_="time_line").text
                         try :
-                            start=j.find(class_="sblockline")
-                            st=start.text
-                            date.append(j.find(class_="time_line").text)
+                            start = j.find(class_="sblockline")
+                            st = start.text
                         except AttributeError:
                             st=""
-                        mc.append(text.text)
-                        star.append(st)
+                        result['content'] = text.text
+                        result['starText'] = st
+                        result['name'] = name
+                        result['date'] = date
+                        result['id'] = id
+                        mainData.append(result)
                     time.sleep(round(sleepTime, 2))
 
-                self.createDataFile(mc,star,placeName)
+                self.createDataFile(mainData,placeName)
 
     '''
         获取总页码
@@ -77,15 +80,14 @@ class XCCrawler:
     '''
         创建数据文件
     '''
-    def createDataFile(self,mc,star,placeName):
+    def createDataFile(self,md,placeName):
         path = os.path.abspath('.') + r"/data/";
         # 如果不存在则创建相应目录
         if not os.path.exists(path):
             os.makedirs(path)
         file = open(path + placeName + '.txt', 'a', encoding='utf-8')
-        for i in range(len(mc)):
-            file.write(mc[i] + "\n   评分：" + star[i] + "\n")
-            print(mc[i]);
+        for i in range(len(md)):
+            file.write("id >> "+md[i]['id']+"  name >> "+md[i]['name']+"  时间 >> "+md[i]['date']+"\n"+md[i]['content'] + "\n   评分：" + md[i]['starText'] + "\n")
         file.close();
         print("数据抓取成功===> " + placeName);
 
