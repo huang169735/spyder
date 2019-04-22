@@ -1,3 +1,6 @@
 from XC.xiechen import XCCrawler
+import DB.sql as sql
+import CONFIG
 
-xc = XCCrawler()
+place = sql.buildMainData(CONFIG.PLACE)
+xc = XCCrawler(place)

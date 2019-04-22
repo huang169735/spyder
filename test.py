@@ -1,11 +1,13 @@
 import os
 import random
+import uuid
 
-placeArray = [{"poiID":10547264, "districtId": 171, "resourceId":137657, "name":"井冈山"}]
-print(placeArray[0]['poiID'])
-placeArray[0]['poiID'] = 1111111
-print(placeArray)
-
+placeArray = {"井冈山":{"poiID":10547264, "districtId": 171, "resourceId":137657}}
+for p in placeArray:
+    print(p)
+    print(placeArray[p])
+print(uuid.uuid4())
 print(os.path.abspath('.'))
+
 #createFile('广东','广州');
 #print(COOKIES[random.choice(list(COOKIES))])

@@ -1,132 +1,185 @@
-# -*- coding: utf-8 -*-
+import sys
+import os
+import re
 import requests
-from lxml import etree
-import random
-import time
-import pandas as pd
-from bs4 import BeautifulSoup
-from urllib.request import urlopen
-from urllib.request import Request
-from fake_useragent import UserAgent
-ua = UserAgent()
-#ie浏览器的user agent
-headers = {
-        'User-Agent': ua.random,
-        'Cookie':'cy=25; cye=tangshan; _lxsdk_cuid=1649144034fc8-047dfb5f06892d-16386952-13c680-1649144034f8f; _lxsdk=1649144034fc8-047dfb5f06892d-16386952-13c680-1649144034f8f; _hc.v=f643750e-028d-6e11-ed82-3806b0655e90.1531445511; dper=e227a513bb722dad9de2c87d596c813c651809ba085c9b43dc688501a92a93bbb66f22cdd52d2c92481dff623ae10a863bfa16e03a628837a53c958e6f14856cba59f6843174efa7b0118bc29d462b0a8f6418cdf6691f39e3ff7f6e392a78b3; ll=7fd06e815b796be3df069dec7836c3df; ua=dpuser_2166800587; ctu=2dc6bd505210f4b26bbf0e102fce3b85025084dfe5472fdf113e911496830c79; uamo=15018326478; s_ViewType=10; JSESSIONID=DE23CC05252F3A913A753CC24E928290; Hm_lvt_185e211f4a5af52aaffe6d9c1a2737f4=1531445628; Hm_lpvt_185e211f4a5af52aaffe6d9c1a2737f4=1531445628; _lxsdk_s=16491440354-265-bde-c7f%7C%7C28',
-        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Host':'www.dianping.com'
-    }
-urls=["http://www.dianping.com/shop/1917562",
-"http://www.dianping.com/shop/3154648",
-"http://www.dianping.com/shop/61433764",
-"http://www.dianping.com/shop/2110222",
-"http://www.dianping.com/shop/13884810",
-"http://www.dianping.com/shop/67895574",
-"http://www.dianping.com/shop/4671241",
-"http://www.dianping.com/shop/69267654",
-"http://www.dianping.com/shop/2682973",
-"http://www.dianping.com/shop/18142169",
-"http://www.dianping.com/shop/57841857",
-"http://www.dianping.com/shop/2561284",
-"http://www.dianping.com/shop/5204814",
-"http://www.dianping.com/shop/3905491",
-"http://www.dianping.com/shop/3167527",
-"http://www.dianping.com/shop/2560327",
-"http://www.dianping.com/shop/60334485",
-"http://www.dianping.com/shop/32410537",
-"http://www.dianping.com/shop/14701709",
-"http://www.dianping.com/shop/61511940",
-"http://www.dianping.com/shop/6114028",
-"http://www.dianping.com/shop/58854190",
-"http://www.dianping.com/shop/9313867",
-"http://www.dianping.com/shop/58847517"]
-#
-#def get_ip_list(obj):
-#    ip_text = obj.findAll('tr', {'class': 'odd'})   # 获取带有IP地址的表格的所有行
-#    ip_list = []
-#    for i in range(len(ip_text)):
-#        ip_tag = ip_text[i].findAll('td')   
-#        ip_port = ip_tag[1].get_text() + ':' + ip_tag[2].get_text() # 提取出IP地址和端口号
-#        ip_list.append(ip_port)
-#    print("共收集到了{}个代理IP".format(len(ip_list)))
-#    print(ip_list)
-#    return ip_list
-#def valVer(proxys):
-#    badNum = 0
-#    goodNum = 0
-#    good=[]
-#    for proxy in proxys:
-#        try:
-#            proxy_host = proxy
-#            protocol = 'https' if 'https' in proxy_host else 'http'
-#            proxies = {protocol: proxy_host}
-#            response = requests.get('http://www.baidu.com', proxies=proxies, timeout=2)
-#            if response.status_code != 200:
-#                badNum += 1
-#                print (proxy_host, 'bad proxy')
-#            else:
-#                goodNum += 1
-#                good.append(proxies)
-#                print (proxy_host, 'success proxy')
-#        except Exception as e:
-#            print( e)
-#            # print proxy_host, 'bad proxy'
-#            badNum += 1
-#            continue
-#    print ('success proxy num : ', goodNum)
-#    print( 'bad proxy num : ', badNum)
-#    return good
-#
-#url = 'http://www.xicidaili.com/'
-#headers = {
-#    'User-Agent': 'User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36'}
-#request = Request(url, headers=headers)
-#response = urlopen(request)
-#bsObj = BeautifulSoup(response, 'lxml')     # 解析获取到的html
-#lists=get_ip_list(bsObj)
-#go=valVer(lists)
-#print ("一共多少个ip",len(go))
-p=[]
-s=[]
-t=[]
-n=[]
-l=[]
-for u in urls:
-    for j in range(100):
-        url="%s/review_all/p%d"%(u,j)
-        response=requests.get(url,headers=headers,proxies=random.choice(go))
-        selector=etree.HTML(response.text)
-        print (111)
-        ramnum = random.randint(1,10)
-        time.sleep(3+ramnum)
-        print (222)
-        for i in range(20):
-            pinglun=selector.xpath("""//*[@id="review-list"]/div[2]/div[1]/div[3]/div[3]/ul/li[%d]/div/div[3]/text()"""%i)
-            score=selector.xpath("""//*[@id="review-list"]/div[2]/div[1]/div[3]/div[3]/ul/li[%d]/div/div[2]/span/@class"""%i)
-            time=selector.xpath("""//*[@id="review-list"]/div[2]/div[1]/div[3]/div[3]/ul/li[%d]/div/div[6]/span[1]/text()"""%i)
-            name=selector.xpath("""//*[@id="review-list"]/div[2]/div[1]/div[3]/div[3]/ul/li[%d]/div/div[1]/a/text()"""%i)
-#            try:
-#                href=selector.xpath("""//*[@id="review-list"]/div[2]/div[1]/div[3]/div[3]/ul/li[%d]/div/div[1]/a/@href"""%i)
-#                href=os.path.join("http://www.dianping.com/",href[0][1:])
-#                localresponse=requests.get(href,headers=headers)
-#                localselector=etree.HTML(localresponse.text)
-#                local=localselector.xpath("""/html/body/div[2]/div[1]/div/div/div/div[2]/div[2]/span[2]""")
-#                l.append(local)
-#            except IndexError:
-#                pass
-            p.append(pinglun)
-            s.append(score)
-            t.append(time)
-            n.append(name)
-            print ("pinglun,score,time,name",pinglun,score,time,name)
-    info = {}
-    info['comment'] = p
-    info["name"]=n
-    info["score"]=s
-    info["time"]=t
-#    info["local"]=l
+from pyquery import PyQuery as pq
 
-    print(info)
-    df = pd.DataFrame(info)
-    df.to_csv(r"C:\Users\Administrator\Desktop\%s.csv" %u[29:], index=False, sep=',',encoding='utf-8')
-    
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '..'))
+sys.path.append("..")
+
+
+header_pinlun = {
+'Host': 'www.dianping.com',
+'Accept-Encoding': 'gzip',
+'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36'
+}
+
+header_css = {
+'Host': 's3plus.meituan.net',
+'Accept-Encoding': 'gzip',
+'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36'
+
+}
+
+
+# 0-详情页
+def get_msg():
+    """
+    url: http://www.dianping.com/shop/+ 商铺ID +/review_all
+    :return:
+    """
+    url = "http://www.dianping.com/shop/110620927/review_all"
+    # url = "https://www.dianping.com/shop/77307732/review_all"
+    html = requests.get(url, headers=header_pinlun)
+    print("1 ===> STATUS", html.status_code)
+    doc = pq(html.text)
+    # 解析每条评论
+    pinglunLi = doc("div.reviews-items > ul > li").items()
+    """
+    调用评论里的css样式处理和加密字体svg处理
+    :return:
+    dict_svg_text: svg整个加密字库，以字典形式返回
+    list_svg_y：svg背景中的<path>标签里的[x,y]坐标轴，以[x,y]形式返回
+    dict_css_x_y：css样式中，每个加密字体的<span> 标签内容，用于匹配dict_svg_text 中的key，以字典形式返回
+    """
+    dict_svg_text, list_svg_y, dict_css_x_y = css_get(doc)
+
+    for data in pinglunLi:
+        # 用户名
+        userName = data("div.main-review > div.dper-info > a").text()
+        #评论id
+        id = data("div.misc-info > span > a").attr("data-id")
+        # 用户ID链接
+        userID = "http://www.dianping.com" + data("div.main-review > div.dper-info > a").attr("href")
+        # 用户评分星级[10-50]
+        startShop = str(data("div.review-rank > span").attr("class")).split(" ")[1].replace("sml-str", "")
+        # 用户描述：机器：非常好 环境：非常好 服务：非常好 人均：0元
+        describeShop = data("div.review-rank > span.score").text()
+        # 关键部分，评论HTML,待处理，评论包含隐藏部分和直接展示部分，默认从隐藏部分获取数据，没有则取默认部分。（查看更多）
+        pinglun = data("div.review-words.Hide").html()
+        try:
+            len(pinglun)
+        except:
+            pinglun = data("div.review-words").html()
+        # 该用户喜欢的美食
+        loveFood = data("div.main-review > div.review-recommend").text()
+        # 发表评论的时间
+        pinglunTime = data("div.main-review > div.misc-info.clearfix > span.time").text()
+        print("userName:", userName)
+        print("userID:", userID)
+        print("startShop:", startShop)
+        print("describeShop:", describeShop)
+        print("loveFood:", loveFood)
+        print("pinglunTime:", pinglunTime)
+        print("pinglun:", css_decode(dict_css_x_y, dict_svg_text, list_svg_y, pinglun))
+        print("*"*100)
+
+
+# 1-评论隐含部分字体css样式, 获取svg链接，获取加密汉字background
+def css_get(doc):
+    css_link = "http:"+doc("head > link:nth-child(9)").attr("href")
+    background_link = requests.get(css_link, headers=header_css)
+    r = r'background-image: url(.*?);'
+    matchObj = re.compile(r, re.I)
+    svg_link = matchObj.findall(background_link.text)[0].replace(")", "").replace("(", "http:")
+    """
+    svg_text() 方法：请求svg字库，并抓取加密字
+    dict_svg_text: svg整个加密字库，以字典形式返回
+    list_svg_y：svg背景中的<path>标签里的[x,y]坐标轴，以[x,y]形式返回
+    """
+    dict_avg_text, list_svg_y = svg_text(svg_link)
+    """
+    css_dict() 方法：生成css样式中background的样式库
+    dict_css: 返回css字典样式
+    """
+    dict_css = css_dict(background_link.text)
+    return dict_avg_text, list_svg_y, dict_css
+
+
+# 2-字体库链接
+def svg_text(url):
+    html = requests.get(url)
+    dict_svg, list_y = svg_dict(html.text)
+    return dict_svg, list_y
+
+
+# 3-生成svg字库字典
+def svg_dict(csv_html):
+    svg_text_r = r'<textPath xlink:href="(.*?)" textLength="(.*?)">(.*?)</textPath>'
+    svg_text_re = re.findall(svg_text_r, csv_html)
+    dict_avg = {}
+    # 生成svg加密字体库字典
+    for data in svg_text_re:
+        dict_avg[data[0].replace("#", "")] = list(data[2])
+    """
+    重点：http://s3plus.meituan.net/v1/mss_0a06a471f9514fc79c981b5466f56b91/svgtextcss/74d63812e5b327d850ab4a8782833d47.svg
+        svg <path> 标签里内容对应css样式中background的y轴参数，小于关系，
+        如果css样式中的background的y参数小于 svg_y_re 集合中最小的数，则向上取y轴，('18', 'M0', '748', 'H600')，
+        如.gqi4j {background: -98.0px -745.0px;} 中的y-745，取正数745，小于748，则对应加密字库实际y轴为748，对应的18就是<textPath>中的x轴
+    """
+    svg_y_r = r'<path id="(.*?)" d="(.*?) (.*?) (.*?)"/>'
+    svg_y_re = re.findall(svg_y_r, csv_html)
+    list_y = []
+    # 存储('18', 'M0', '748', 'H600') eg:(x坐标，未知，y坐标，未知)
+    for data in svg_y_re:
+        list_y.append([data[0], data[2]])
+    return dict_avg, list_y
+
+
+# 4-生成css字库字典
+def css_dict(html):
+    css_text_r = r'.(.*?){background:(.*?)px (.*?)px;}'
+    css_text_re = re.findall(css_text_r, html)
+    dict_css = {}
+    for data in css_text_re:
+        """
+        加密字库.gqi4j {background: -98.0px -745.0px;}与svg文件对应关系，x/14，就是svg文件加密字体下标
+        y，原样返回，需要在svg函数中做处理
+        """
+        x = int(float(data[1])/-14)
+        """
+        字典参数：{css参数名：(background-x,background-y,background-x/14,background-y)}
+        """
+        dict_css[data[0]] = (data[1], data[2], x, data[2])
+    return dict_css
+
+
+# 5-最终评论汇总
+def css_decode(css_html, svg_dict, svg_list, pinglun_html):
+    """
+    :param css_html: css 的HTML源码
+    :param svg_dict: svg加密字库的字典
+    :param svg_list: svg加密字库对应的坐标数组[x, y]
+    :param pinglun_html: 评论的HTML源码，对应0-详情页的评论，在此处理
+    :return: 最终合成的评论
+    """
+    css_dict_text = css_html
+    csv_dict_text, csv_dict_list = svg_dict, svg_list
+    # 处理评论源码中的span标签，生成字典key
+    pinglun_text = pq(pinglun_html.replace('<span class="', ',').replace('"/>', ",").replace('">', ",")).text()
+    pinglun_list = [x for x in pinglun_text.split(",") if x != '']
+    pinglun_str = []
+    for msg in pinglun_list:
+        # 如果有加密标签
+        if msg in css_dict_text:
+            # 参数说明：[x,y] css样式中background 的[x/14，y]
+            x = int(css_dict_text[msg][2])
+            y = -float(css_dict_text[msg][3])
+            # 寻找background的y轴比svg<path>标签里的y轴小的第一个值对应的坐标就是<textPath>的href值
+            for g in csv_dict_list:
+                if y < int(g[1]):
+                    # print(g)
+                    # print(csv_dict_text[g[0]][x])
+                    pinglun_str.append(csv_dict_text[g[0]][x])
+                    break
+        # 没有加密标签
+        else:
+            pinglun_str.append(msg.replace("\n", ""))
+    str_pinglun = ""
+    for x in pinglun_str:
+        str_pinglun += x
+    return str_pinglun
+
+
+if __name__ == '__main__':
+    get_msg()
